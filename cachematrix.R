@@ -14,7 +14,7 @@ makeCacheMatrix <- function(inMatrix = matrix()) {
     # get returns the matrix
     get <- function() inMatrix
     # setinverse computes the inverse, caches it & sets the changed value
-    setinverse <- function(solve) {
+    setinverse <- function() {
         inverseMatrix <<- solve(inMatrix)
         changedMatrix <<- FALSE
     }
@@ -31,12 +31,12 @@ makeCacheMatrix <- function(inMatrix = matrix()) {
 
 # cacheSolve: Takes as input a special "cache matrix" object created by makeCacheMatrix.
 #             If the matrix has not changed and the inverse has been cached, then cacheSolve
-#             retrieves the cached inverse, otherwise it computes the inverse.
+#             retrieves the cached inverse, otherwise it computes the inverse and caches it.
 
 cacheSolve <- function(cacheMatrix, ...) {
     # check matrix data has not changed
-    cm <- cacheMatrix$getchanged()
-    if (!cm) {
+    chg <- cacheMatrix$getchanged()
+    if (!chg) {
         message("matrix data not changed")
         # matrix data unchanged, so get the cached inverse
         cacheInverse <- cacheMatrix$getinverse()
@@ -46,11 +46,8 @@ cacheSolve <- function(cacheMatrix, ...) {
             return(cacheInverse)
         }
     }
-    # get the matrix data and compute the inverse
-    data <- cacheMatrix$get()
-    cacheInverse <- solve(data)
-    # cache the inverse
-    cacheMatrix$setinverse(cacheInverse)
-    # return the inverse
-    cacheInverse
+    # set & cache the inverse
+    cacheMatrix$setinverse()
+    # return the just cached inverse
+    cacheMatrix$getinverse()
 }
